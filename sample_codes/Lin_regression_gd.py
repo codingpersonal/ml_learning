@@ -163,8 +163,8 @@ class GradDesSol():
                 print("gradient descent converged in " , itr , " iterations.")
                 break
 
-    
+
 print ("hello_world")
-grad_des = GradDesSol(0.01, False)
+grad_des = GradDesSol(0.005, False)
 grad_des.apply_grad_des(5, 5000)
 
