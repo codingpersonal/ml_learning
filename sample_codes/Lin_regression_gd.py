@@ -74,7 +74,7 @@ class GradDesSol():
 
 #           positive and negative normally distributed numbers converged the
 #           regression quickly
-            rand_num1 = random.normalvariate(0.0, 200.0)
+            rand_num1 = random.normalvariate(0.0, 2.0)
             rand_num2 = random.normalvariate(0.0, 4.0)
             rand_num3 = random.normalvariate(0.0, 3.0)
             delta_estimation = (self.find_estimated_value(rand_num1, rand_num2, rand_num3) -
@@ -84,13 +84,21 @@ class GradDesSol():
             self.loss_wrt_w1 += delta_estimation * rand_num1
             self.loss_wrt_w2 += delta_estimation * rand_num2
             self.loss_wrt_w3 += delta_estimation * rand_num3
+
+
         # update the variable
         self.total_loss /= 2*num_ex
+
+        # This is the normal update mechanism. The current equation converges in between
+        # 300-500 iterations
         self.w0 -= 2.0 *self.alpha * self.loss_wrt_w0 / num_ex
         self.w1 -= self.alpha * self.loss_wrt_w1 / num_ex
         self.w2 -= self.alpha * self.loss_wrt_w2 / num_ex
         self.w3 -= self.alpha * self.loss_wrt_w3 / num_ex
         self.print_learnt_params();
+
+        # This is the adagrad mechanism. It converges way faster
+        
 
     def apply_grad_des(self, batch_size, max_itr = 1000):
         itr = 0;
