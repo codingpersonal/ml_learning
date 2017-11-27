@@ -6,7 +6,7 @@
      We are going to find the coefficients of this equation through gradient
      descent. We are going to use squared error as loss function.
 
-     Two issues I am seeing in Lin Regression:
+     Two issues I saw initially in Lin Regression:
      1 .Somehow in this program, the bias term is not converging properly.
      Having a higher learning rate on bias term helps in converging it
      Similar discussion: https://goo.gl/9fqydH
@@ -23,7 +23,8 @@
      as well as negative, it converged beautifully.
 
      Initializating the weights also helped a lot. The convergence happend a lot
-     faster. The whole gradient decent is converging so beautifully.
+     faster. The whole gradient decent is converging so beautifully including
+     bias term.
 """
 
 import random
@@ -31,13 +32,22 @@ import random
 class GradDesSol():
     """This class finds the solution of an equation through gradient descent"""
 
-    def __init__(self, learning_rate):
+    def __init__(self, learning_rate,
+                 use_rms_prop = False):
         # initializing the weights helped a lot
         self.w0 = random.normalvariate(0.0, 0.1)
         self.w1 = random.normalvariate(0.0, 0.1)
         self.w2 = random.normalvariate(0.0, 0.1)
         self.w3 = random.normalvariate(0.0, 0.1)
         self.alpha = learning_rate
+        self.gamma = 0.9
+
+        # for RMSProp algorithm
+        self.use_rms_prop = use_rms_prop
+        self.rms_grad_wrt_w0 = 0.0
+        self.rms_grad_wrt_w1 = 0.0
+        self.rms_grad_wrt_w2= 0.0
+        self.rms_grad_wrt_w3 = 0.0        
         self.clear_loss_grad()
 
     def find_actual_value(self, x1, x2, x3):
@@ -86,19 +96,54 @@ class GradDesSol():
             self.loss_wrt_w3 += delta_estimation * rand_num3
 
 
-        # update the variable
+        # compute average gradient per coordinate
         self.total_loss /= 2*num_ex
+        self.loss_wrt_w0 /= num_ex
+        self.loss_wrt_w1 /= num_ex
+        self.loss_wrt_w2 /= num_ex
+        self.loss_wrt_w3 /= num_ex
 
+        # update the variable
         # This is the normal update mechanism. The current equation converges in between
         # 300-500 iterations
-        self.w0 -= 2.0 *self.alpha * self.loss_wrt_w0 / num_ex
-        self.w1 -= self.alpha * self.loss_wrt_w1 / num_ex
-        self.w2 -= self.alpha * self.loss_wrt_w2 / num_ex
-        self.w3 -= self.alpha * self.loss_wrt_w3 / num_ex
+        if self.use_rms_prop == False:
+            self.w0 -= 2.0 *self.alpha * self.loss_wrt_w0
+            self.w1 -= self.alpha * self.loss_wrt_w1
+            self.w2 -= self.alpha * self.loss_wrt_w2
+            self.w3 -= self.alpha * self.loss_wrt_w3
+
+        # This is the rmsprop mechanism. It should converge better but
+        # this is not working in this case. The convergence is really really slow
+        # probably bcoz of the decaying alpha which gets really really small after
+        # few iterations only
+
+        # find the new RMS of the gradient per coordinate
+        elif self.use_rms_prop:
+            self.rms_grad_wrt_w0 = self.gamma*self.rms_grad_wrt_w0 +    \
+                (1-self.gamma)*(self.loss_wrt_w0**2)
+            self.rms_grad_wrt_w1 = self.gamma*self.rms_grad_wrt_w1 +    \
+                (1-self.gamma)*(self.loss_wrt_w1**2)
+            self.rms_grad_wrt_w2 = self.gamma*self.rms_grad_wrt_w2 +    \
+                (1-self.gamma)*(self.loss_wrt_w2**2)
+            self.rms_grad_wrt_w3 = self.gamma*self.rms_grad_wrt_w3 +    \
+                (1-self.gamma)*(self.loss_wrt_w3**2)
+            dec_alpha_w0 = 2.0 * (self.alpha/(self.rms_grad_wrt_w0 + 0.0001)**0.5)
+            dec_alpha_w1 = (self.alpha/(self.rms_grad_wrt_w1 + 0.0001)**0.5)
+            dec_alpha_w2 = (self.alpha/(self.rms_grad_wrt_w2 + 0.0001)**0.5)
+            dec_alpha_w3 = (self.alpha/(self.rms_grad_wrt_w3 + 0.0001)**0.5)
+            
+            self.w0 -= dec_alpha_w0 * self.loss_wrt_w0
+            self.w1 -= dec_alpha_w1 * self.loss_wrt_w1
+            self.w2 -= dec_alpha_w2 * self.loss_wrt_w2
+            self.w3 -= dec_alpha_w3 * self.loss_wrt_w3
+            print ("alpha_0: %.5f" % dec_alpha_w0,
+               "alpha_1: %.5f" % dec_alpha_w1,
+               " ; alpha_2: %.5f" % dec_alpha_w2,
+               " ; alpha_3: %.5f" % dec_alpha_w3
+               )
+
         self.print_learnt_params();
 
-        # This is the adagrad mechanism. It converges way faster
-        
 
     def apply_grad_des(self, batch_size, max_itr = 1000):
         itr = 0;
@@ -120,6 +165,6 @@ class GradDesSol():
 
     
 print ("hello_world")
-grad_des = GradDesSol(0.005)
+grad_des = GradDesSol(0.01, False)
 grad_des.apply_grad_des(5, 5000)
 
