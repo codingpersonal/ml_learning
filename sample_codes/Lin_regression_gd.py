@@ -74,7 +74,7 @@ class GradDesSol():
     def execute_single_batch_gd(self, num_ex):
         if num_ex <= 0:
             return
-            
+
         self.clear_loss_grad()
         for i in range(num_ex):
 #           uniform generated numbers are poorer takes forever to converge
@@ -164,7 +164,7 @@ class GradDesSol():
                 break
 
 
-print ("hello_world")
+print ("hello_world here")
 grad_des = GradDesSol(0.005, False)
 grad_des.apply_grad_des(5, 5000)
 
