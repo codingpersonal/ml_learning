@@ -39,6 +39,9 @@ class BaseNode(object):
         self.learning_rate = 0.05
 
 
+    def getNodeNumber(self):
+        return self.current_node_num
+
     # called during initialization
     def setForwardNode(self, new_node, forward_node_index):
         self.output_node_references[forward_node_index] = new_node
