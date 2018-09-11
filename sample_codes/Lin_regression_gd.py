@@ -136,7 +136,7 @@ class GradDesSol():
             dec_alpha_w1 = max(0.0005, (self.alpha/(self.rms_grad_wrt_w1 + 0.0001)**0.5))
             dec_alpha_w2 = max(0.0005, (self.alpha/(self.rms_grad_wrt_w2 + 0.0001)**0.5))
             dec_alpha_w3 = max(0.0005, (self.alpha/(self.rms_grad_wrt_w3 + 0.0001)**0.5))
-            
+
             self.w0 -= dec_alpha_w0 * self.loss_wrt_w0
             self.w1 -= dec_alpha_w1 * self.loss_wrt_w1
             self.w2 -= dec_alpha_w2 * self.loss_wrt_w2
