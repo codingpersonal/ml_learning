@@ -20,7 +20,7 @@ class ReLUNode(BaseNode):
         self.num_mini_batch += 1
 
         # calculate the linear formula first
-        ip_val = np.mumultiply(self.input_node_values, self.input_nodes_weights)
+        ip_val = np.multiply(self.input_node_values, self.input_nodes_weights)
         ip_scalar_val = np.sum(ip_val)
         ip_scalar_val += self.bias_weight
 
@@ -31,7 +31,7 @@ class ReLUNode(BaseNode):
         if ip_scalar_val > 0:
             self.transient_back_propagation_loss_per_input = np.copy(self.input_nodes_weights)
         else:
-            self.transient_back_propagation_loss_per_input = np.zeros(self.input_nodes_count)
+            self.transient_back_propagation_loss_per_input = np.zeros(self.input_node_count)
 
         # compute the loss for updating the weights of this node
         if ip_scalar_val > 0:
@@ -39,7 +39,7 @@ class ReLUNode(BaseNode):
                 self.input_node_values)
             self.transient_grad_loss_for_bias_term = 1
         else:
-            self.grad_loss_per_input_weight = np.zeros(self.input_nodes_count)
+            self.grad_loss_per_input_weight = np.zeros(self.input_node_count)
             self.transient_grad_loss_for_bias_term = 0
 
         self.propagateForward(ip_scalar_val)

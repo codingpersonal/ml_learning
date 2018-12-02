@@ -34,7 +34,7 @@ class NeuralNetworkController:
         for index in range(len(nn_hidden_arch)):
             curr_layer_nodes = []
             curr_layer_count = nn_hidden_arch[index]
-            next_layer_count = nn_hidden_arch[index + 1] if index == len(nn_hidden_arch) - 1 else output_layer_count
+            next_layer_count = nn_hidden_arch[index + 1] if index < (len(nn_hidden_arch) - 1) else output_layer_count
             for j in range(curr_layer_count):
                 new_node = ReLUNode(len(previous_layer), next_layer_count, j)
                 curr_layer_nodes.append(new_node)
@@ -46,7 +46,7 @@ class NeuralNetworkController:
                     i1.setForwardNode(i2, i2.getNodeNumber())
                     i2.setBackwardNode(i1, i1.getNodeNumber())
 
-            previous_layer = curr_layer_nodes.copy()
+            previous_layer = curr_layer_nodes[:]
 
 
         # ********************************* construct output layer now ***************************************
@@ -118,7 +118,7 @@ class NeuralNetworkController:
     def trainDummyNN(self):
         # simulate the equation Y = 10 + 3x1 + 5x2 - 2x3
         is_converged = False
-        mini_batch_size = 100
+        mini_batch_size = 10
         max_batch_count_train = 1000
 
         while (is_converged == False and max_batch_count_train > 0):
@@ -141,6 +141,6 @@ class NeuralNetworkController:
                 is_converged = True
 
 print ("hello world")
-nn = NeuralNetworkController(3, [4], 1)
+nn = NeuralNetworkController(3, [3], 1)
 nn.trainDummyNN()
 
